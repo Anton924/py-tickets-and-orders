@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
 
-import settings
+from django.conf import settings
 
 
 class Genre(models.Model):
@@ -60,14 +60,15 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name="orders"
     )
 
     class Meta:
         ordering = ["-created_at"]
 
     def __str__(self) -> str:
-        return f"{str(self.created_at)}"
+        return f"{self.created_at.strftime('%Y-%m-%d %H:%M:%S')}"
 
 
 class Ticket(models.Model):
@@ -76,7 +77,11 @@ class Ticket(models.Model):
         on_delete=models.CASCADE,
         related_name="taken_seats"
     )
-    order = models.ForeignKey("Order", on_delete=models.CASCADE)
+    order = models.ForeignKey(
+        "Order",
+        on_delete=models.CASCADE,
+        related_name="tickets"
+    )
     row = models.IntegerField()
     seat = models.IntegerField()
 
@@ -90,7 +95,7 @@ class Ticket(models.Model):
 
     def __str__(self) -> str:
         return (f"{self.movie_session.movie.title} "
-                f"{str(self.movie_session.show_time)} "
+                f"{str(self.movie_session.show_time.strftime("%Y-%m-%d %H:%M:%S"))} "
                 f"(row: {self.row}, seat: {self.seat})")
 
     def clean(self) -> None:
