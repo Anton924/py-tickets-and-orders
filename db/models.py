@@ -68,7 +68,8 @@ class Order(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self) -> str:
-        return f"{self.created_at.strftime("%Y-%m-%d %H:%M:%S")}"
+        time = self.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        return f"{time}"
 
 
 class Ticket(models.Model):
@@ -95,8 +96,9 @@ class Ticket(models.Model):
 
     def __str__(self) -> str:
         time = self.movie_session.show_time
+        time = time.strftime("%Y-%m-%d %H:%M:%S")
         return (f"{self.movie_session.movie.title} "
-                f"{str(time.strftime("%Y-%m-%d %H:%M:%S"))} "
+                f"{time} "
                 f"(row: {self.row}, seat: {self.seat})")
 
     def clean(self) -> None:
